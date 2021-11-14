@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import {BrowserRouter as Router,Switch,Route} from 'react-router-dom';
+import About from './Pages/About';
+import Home from './Pages/Home';
+import Navigation from './Components/Navigation';
+import ProductPage from './Pages/Product';
+import Cart from './Pages/Cart';
+import SingleProduct from './Pages/SingleProduct';
+import { useEffect } from 'react/cjs/react.development';
+// import { cartContext } from './CartContext';
 
-function App() {
+import { cartContext } from './CartContext';
+
+const App = () => {
+  const [cart,setCart]  = useState({})
+  // Fetch data from local storage
+  useEffect(
+    ()=>{
+      const cart = localStorage.getItem('cart');
+      setCart(JSON.parse(cart));
+      console.log(JSON.parse(cart));
+    },[]
+  )
+  useEffect(
+    ()=>{
+      localStorage.setItem('cart',JSON.stringify(cart));
+    },[cart]
+  )
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+
+        <Router>
+          <cartContext.Provider value={{cart,setCart}}>
+              <Navigation/>
+              <Switch>
+                  <Route path="/" exact component={Home}></Route>
+                  <Route path="/about" component={About}></Route>
+                  <Route path="/product" exact component={ProductPage}></Route>
+                  <Route path="/product/:_id" component={SingleProduct}></Route>
+                  <Route path="/cart" component={Cart}></Route>
+              </Switch>
+
+          </cartContext.Provider>
+        </Router>
+
+    </>
+  )
 }
 
-export default App;
+export default App
